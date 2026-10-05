@@ -2,13 +2,13 @@
     <div class="px-4 py-8 sm:px-0">
         <div class="flex items-center justify-between mb-10">
             <div>
-                <h1 class="text-4xl font-black text-slate-900 tracking-tight italic">Gestion de Trésorerie</h1>
-                <p class="text-slate-500 font-medium mt-1 uppercase text-[10px] tracking-widest">Configuration des flux et comptes bancaires</p>
+                <h1 class="text-4xl font-black text-slate-900 tracking-tight italic">{{ __('Treasury Management') }}</h1>
+                <p class="text-slate-500 font-medium mt-1 uppercase text-[10px] tracking-widest">{{ __('Configuration of flows and bank accounts') }}</p>
             </div>
             <div class="flex gap-4">
                 <button onclick="document.getElementById('bank-modal').classList.remove('hidden')" class="bg-blue-600 hover:bg-slate-900 text-white px-8 py-4 rounded-3xl font-black shadow-2xl shadow-blue-200 transition-all active:scale-95 flex items-center gap-2 text-xs uppercase tracking-widest">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
-                    Ajouter un Compte
+                    {{ __('Add an Account') }}
                 </button>
             </div>
         </div>
@@ -41,10 +41,10 @@
                                             @endif
                                             <div>
                                                 <h3 class="font-black text-slate-900 text-xl tracking-tight">{{ $account->bank_name }}</h3>
-                                                <span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[8px] font-black uppercase tracking-tighter border border-slate-200">Compte Courant</span>
+                                                <span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[8px] font-black uppercase tracking-tighter border border-slate-200">{{ __('Current Account') }}</span>
                                             </div>
                                         </div>
-                                        <form action="{{ route('bank-accounts.destroy', $account) }}" method="POST" onsubmit="return confirm('Attention : Cette action est irréversible. Confirmer la suppression ?')">
+                                        <form action="{{ route('bank-accounts.destroy', $account) }}" method="POST" onsubmit="return confirm('{{ __('Warning: This action is irreversible. Confirm deletion?') }}')">
                                             @csrf @method('DELETE')
                                             <button class="w-10 h-10 rounded-full bg-rose-50 text-rose-300 hover:bg-rose-500 hover:text-white hover:rotate-90 transition-all duration-500 flex items-center justify-center">
                                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -55,7 +55,7 @@
                                     <div class="space-y-6">
                                         <div class="bg-slate-900 rounded-[1.5rem] p-6 text-white shadow-2xl shadow-slate-200 relative overflow-hidden group/rib">
                                             <div class="absolute inset-0 bg-blue-500/10 opacity-0 group-hover/rib:opacity-100 transition-opacity"></div>
-                                            <p class="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Relevé d'Identité Bancaire</p>
+                                            <p class="text-[8px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">{{ __('Bank Identity Statement (RIB)') }}</p>
                                             <div class="flex justify-between items-center">
                                                 <p class="text-sm font-black font-mono tracking-widest text-blue-100">
                                                     {{ collect(str_split($account->rib, 4))->join(' ') }}
@@ -67,13 +67,13 @@
                                         <div class="flex items-center justify-between px-2">
                                             <div class="flex items-center gap-3">
                                                 <div class="flex flex-col">
-                                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Carnets</span>
-                                                    <span class="text-xs font-black text-slate-900">{{ $account->cheque_books_count }} actifs</span>
+                                                    <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">{{ __('Cheque Books') }}</span>
+                                                    <span class="text-xs font-black text-slate-900">{{ $account->cheque_books_count }} {{ __('active') }}</span>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Agence</span>
-                                                <span class="text-xs font-black text-slate-700 italic">{{ $account->agency ?? 'Siège Social' }}</span>
+                                                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest block">{{ __('Agency') }}</span>
+                                                <span class="text-xs font-black text-slate-700 italic">{{ $account->agency ?? __('Headquarters') }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -85,8 +85,8 @@
                             <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
                                 <svg class="w-12 h-12 text-slate-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
-                            <h3 class="font-black text-slate-300 uppercase text-sm tracking-[0.3em]">Aucune banque connectée</h3>
-                            <p class="text-slate-400 text-xs mt-2 font-medium">Commencez par ajouter votre premier compte bancaire.</p>
+                            <h3 class="font-black text-slate-300 uppercase text-sm tracking-[0.3em]">{{ __('No bank connected') }}</h3>
+                            <p class="text-slate-400 text-xs mt-2 font-medium">{{ __('Start by adding your first bank account.') }}</p>
                         </div>
                     @endforelse
                 </div>
@@ -99,7 +99,7 @@
                     
                     <div class="relative z-10">
                         <div class="flex items-center justify-between mb-10">
-                            <h2 class="text-2xl font-black italic tracking-tight">Carnets de Chèques</h2>
+                            <h2 class="text-2xl font-black italic tracking-tight">{{ __('Cheque Books') }}</h2>
                             <button onclick="document.getElementById('chequebook-modal').classList.remove('hidden')" class="w-12 h-12 bg-white/10 hover:bg-white hover:text-indigo-950 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl active:scale-95">
                                 <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
                             </button>
@@ -125,7 +125,7 @@
                                                 <h4 class="font-black text-sm tracking-tight italic">Série #{{ $book->start_number }}</h4>
                                             </div>
                                         </div>
-                                        <form action="{{ route('cheque-books.destroy', $book) }}" method="POST" onsubmit="return confirm('Révoquer ce carnet ?')">
+                                        <form action="{{ route('cheque-books.destroy', $book) }}" method="POST" onsubmit="return confirm('{{ __('Revoke this book?') }}')">
                                             @csrf @method('DELETE')
                                             <button class="text-white/10 hover:text-rose-400 transition-colors">
                                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -143,17 +143,17 @@
                                             <div class="h-full bg-gradient-to-r from-blue-500 to-indigo-400 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" style="width: {{ $perc }}%"></div>
                                         </div>
                                         <span class="text-[9px] font-black {{ ($total - $used) < 5 ? 'text-rose-400 animate-pulse' : 'text-blue-400' }} uppercase">
-                                            {{ $total - $used }} RESTANTS
+                                            {{ $total - $used }} {{ __('REMAINING') }}
                                         </span>
                                     </div>
                                     <div class="flex justify-between items-center px-1">
-                                        <span class="text-[8px] font-black text-white/20 uppercase">Plage: {{ $book->start_number }} &rarr; {{ $book->end_number }}</span>
-                                        <span class="text-[8px] font-black text-white/50 bg-white/5 px-2 py-0.5 rounded-full">Usage: {{ round($perc) }}%</span>
+                                        <span class="text-[8px] font-black text-white/20 uppercase">{{ __('Range') }}: {{ $book->start_number }} &rarr; {{ $book->end_number }}</span>
+                                        <span class="text-[8px] font-black text-white/50 bg-white/5 px-2 py-0.5 rounded-full">{{ __('Usage') }}: {{ round($perc) }}%</span>
                                     </div>
                                 </div>
                             @empty
                                 <div class="py-20 text-center opacity-20 border-2 border-dashed border-white/10 rounded-[2rem]">
-                                    <p class="text-[10px] font-black uppercase tracking-[0.3em]">Aucun carnet configuré</p>
+                                    <p class="text-[10px] font-black uppercase tracking-[0.3em]">{{ __('No cheque books configured') }}</p>
                                 </div>
                             @endforelse
                         </div>
@@ -171,13 +171,14 @@
                 @csrf
                 <div class="p-12 bg-slate-50 border-b border-slate-100 relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-                    <h3 class="text-4xl font-black text-slate-900 italic tracking-tighter">Connecter une Banque</h3>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Choisissez votre établissement partenaire</p>
+                    <h3 class="text-4xl font-black text-slate-900 italic tracking-tighter">{{ __('Connect a Bank') }}</h3>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">{{ __('Choose your partner institution') }}</p>
                 </div>
                 
-                <div class="p-12 space-y-10">
+                <div class="max-h-[60vh] overflow-y-auto px-12 py-8 space-y-10 custom-scrollbar">
                     <!-- Visual Bank Picker -->
                     <div>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 ml-1">{{ __('Select Institution') }}</label>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             @foreach($banks as $bank)
                                 <label class="relative group cursor-pointer">
@@ -195,31 +196,31 @@
                                 </label>
                             @endforeach
                         </div>
-                    </div>  </div>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Agence (Optionnel)</label>
-                            <input type="text" name="agency" placeholder="Ex: Agence Hassan II" class="w-full bg-slate-50 border-slate-100 rounded-2xl p-4 text-sm font-black focus:ring-blue-600 transition-all">
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{{ __('Agency (Optional)') }}</label>
+                            <input type="text" name="agency" placeholder="{{ __('e.g., Hassan II Agency') }}" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-black focus:border-blue-600 focus:bg-white focus:ring-0 transition-all outline-none">
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">RIB (24 Chiffres)</label>
-                            <input type="text" name="rib" required minlength="24" maxlength="24" placeholder="000...000" class="w-full bg-slate-50 border-slate-100 rounded-2xl p-4 text-sm font-black font-mono focus:ring-blue-600 transition-all">
+                        <div class="space-y-2">
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{{ __('RIB (24 Digits)') }}</label>
+                            <input type="text" name="rib" required minlength="24" maxlength="24" placeholder="000...000" class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl p-4 text-sm font-black font-mono focus:border-blue-600 focus:bg-white focus:ring-0 transition-all outline-none">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Logo de la Banque (Optionnel)</label>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{{ __('Bank Logo (Optional)') }}</label>
                         <div class="relative group">
                             <input type="file" name="logo" accept="image/*" class="w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-8 text-sm font-bold text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-slate-900 file:text-white hover:border-blue-300 transition-all cursor-pointer">
                         </div>
-                        <p class="text-[9px] text-slate-400 font-bold mt-2 uppercase">Formats acceptés : PNG, JPG, SVG. Max 2MB.</p>
+                        <p class="text-[9px] text-slate-400 font-bold mt-2 uppercase">{{ __('Accepted formats: PNG, JPG, SVG. Max 2MB.') }}</p>
                     </div>
                 </div>
 
                 <div class="p-10 bg-slate-50 flex justify-end gap-6">
-                    <button type="button" onclick="document.getElementById('bank-modal').classList.add('hidden')" class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Annuler</button>
-                    <button type="submit" class="bg-blue-600 text-white px-10 py-5 rounded-3xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-200 hover:bg-slate-900 transition-all">Enregistrer</button>
+                    <button type="button" onclick="document.getElementById('bank-modal').classList.add('hidden')" class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">{{ __('Cancel') }}</button>
+                    <button type="submit" class="bg-blue-600 text-white px-10 py-5 rounded-3xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-200 hover:bg-slate-900 transition-all">{{ __('Save') }}</button>
                 </div>
             </form>
         </div>
@@ -231,13 +232,13 @@
             <form action="{{ route('cheque-books.store') }}" method="POST">
                 @csrf
                 <div class="p-10 bg-slate-900">
-                    <h3 class="text-3xl font-black text-white italic">Nouveau Carnet</h3>
-                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-2">Gérez la plage de numérotation</p>
+                    <h3 class="text-3xl font-black text-white italic">{{ __('New Checkbook') }}</h3>
+                    <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-2">{{ __('Manage the numbering range') }}</p>
                 </div>
                 
                 <div class="p-10 space-y-8">
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Compte Source</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">{{ __('Source Account') }}</label>
                         <select name="bank_account_id" required class="w-full bg-slate-50 border-slate-100 rounded-2xl p-4 text-sm font-black focus:ring-blue-600 transition-all">
                             @foreach($bankAccounts as $account)
                                 <option value="{{ $account->id }}">{{ $account->bank_name }} (...{{ substr($account->rib, -4) }})</option>
@@ -247,19 +248,19 @@
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">N° Début</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">{{ __('Start No.') }}</label>
                             <input type="number" name="start_number" required class="w-full bg-slate-50 border-slate-100 rounded-2xl p-4 text-sm font-black focus:ring-blue-600 transition-all">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">N° Fin</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">{{ __('End No.') }}</label>
                             <input type="number" name="end_number" required class="w-full bg-slate-50 border-slate-100 rounded-2xl p-4 text-sm font-black focus:ring-blue-600 transition-all">
                         </div>
                     </div>
                 </div>
 
                 <div class="p-10 bg-slate-50 flex justify-end gap-6">
-                    <button type="button" onclick="document.getElementById('chequebook-modal').classList.add('hidden')" class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">Annuler</button>
-                    <button type="submit" class="bg-slate-900 text-white px-10 py-5 rounded-3xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl">Activer</button>
+                    <button type="button" onclick="document.getElementById('chequebook-modal').classList.add('hidden')" class="text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors">{{ __('Cancel') }}</button>
+                    <button type="submit" class="bg-slate-900 text-white px-10 py-5 rounded-3xl text-xs font-black uppercase tracking-[0.2em] shadow-2xl">{{ __('Activate') }}</button>
                 </div>
             </form>
         </div>

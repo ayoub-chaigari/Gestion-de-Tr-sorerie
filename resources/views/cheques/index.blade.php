@@ -1,42 +1,44 @@
 <x-app-layout>
-    <div class="p-8 max-w-7xl mx-auto">
+    <div class="p-4 lg:p-8 max-w-7xl mx-auto">
         <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-black text-slate-800 italic">Tracking Chèques</h1>
+            <h1 class="text-3xl font-black text-slate-800 italic">{{ __('Cheque Tracking') }}</h1>
+            @if(auth()->user()->hasPermission('cheques', 'create'))
             <a href="{{ route('cheques.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-2xl shadow-lg shadow-blue-100 font-bold transition-all active:scale-95 flex items-center gap-2 uppercase text-xs tracking-widest">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                + Nouveau Chèque
+                {{ __('New Cheque') }}
             </a>
+            @endif
         </div>
 
         <!-- Search Bar & Filters -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-8" data-aos="fade-down" data-aos-delay="100">
             <form action="{{ route('cheques.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
                 <div class="flex-1 relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher par numéro de chèque, banque ou client..." class="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm font-medium bg-slate-50 placeholder-slate-400">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('Search by cheque number, bank or client...') }}" class="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm font-medium bg-slate-50 placeholder-slate-400">
                 </div>
                 
                 <div class="md:w-64">
                     <select name="status" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm font-medium bg-slate-50 text-slate-700">
-                        <option value="">Tous les statuts</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
-                        <option value="deposited" {{ request('status') === 'deposited' ? 'selected' : '' }}>Remis à l'encaissement</option>
-                        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Payé / Encaissé</option>
-                        <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>Impayé</option>
-                        <option value="endorsed" {{ request('status') === 'endorsed' ? 'selected' : '' }}>Endossé</option>
+                        <option value="">{{ __('All Statuses') }}</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                        <option value="deposited" {{ request('status') === 'deposited' ? 'selected' : '' }}>{{ __('Deposited') }}</option>
+                        <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
+                        <option value="unpaid" {{ request('status') === 'unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
+                        <option value="endorsed" {{ request('status') === 'endorsed' ? 'selected' : '' }}>{{ __('Endorsed') }}</option>
                     </select>
                 </div>
                 
                 <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95">
-                    Filtrer
+                    {{ __('Filter') }}
                 </button>
                 
                 @if(request()->has('search') && request('search') != '' || request()->has('status') && request('status') != '')
                     <a href="{{ route('cheques.index') }}" class="px-6 py-3 rounded-xl text-slate-500 font-bold text-sm bg-slate-100 hover:bg-slate-200 hover:text-slate-700 flex items-center justify-center transition-colors">
                         <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        Effacer
+                        {{ __('Clear') }}
                     </a>
                 @endif
             </form>
@@ -52,28 +54,57 @@
         @endif
 
         <!-- Data Table -->
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
+        <div class="bg-white rounded-3xl lg:rounded-[3rem] shadow-2xl shadow-slate-200/40 border border-slate-50 overflow-hidden" x-data="{ isLoading: true }" x-init="setTimeout(() => { isLoading = false; setTimeout(() => { if(typeof AOS !== 'undefined') AOS.refresh() }, 50); }, 100)" data-aos="fade-up" data-aos-delay="200">
+            
+            <template x-if="isLoading">
+                <div class="p-8 space-y-4">
+                    <!-- Table header skeleton -->
+                    <div class="flex gap-4 mb-6 pb-4 border-b border-slate-100">
+                        @for($j=0; $j<6; $j++)
+                        <div class="h-3 w-24 bg-slate-200 rounded-full animate-shimmer {{ $j == 5 ? 'ml-auto' : '' }}"></div>
+                        @endfor
+                    </div>
+                    <!-- Table rows skeleton -->
+                    @for($i=0; $i<6; $i++)
+                    <div class="flex items-center gap-6 py-4">
+                        <div class="h-4 w-28 bg-slate-100 rounded-full animate-shimmer"></div>
+                        <div class="flex gap-3 flex-1 items-center">
+                            <div class="h-10 w-10 bg-slate-100 rounded-[10px] flex-shrink-0 animate-shimmer"></div>
+                            <div class="space-y-2">
+                                <div class="h-3 w-32 bg-slate-100 rounded-full animate-shimmer"></div>
+                                <div class="h-2 w-20 bg-slate-100 rounded-full animate-shimmer"></div>
+                            </div>
+                        </div>
+                        <div class="h-4 w-24 bg-slate-100 rounded-full animate-shimmer"></div>
+                        <div class="h-4 w-20 bg-slate-100 rounded-full animate-shimmer"></div>
+                        <div class="h-6 w-16 bg-slate-100 rounded-lg animate-shimmer"></div>
+                        <div class="h-8 w-24 bg-slate-100 rounded-xl animate-shimmer ml-auto"></div>
+                    </div>
+                    @endfor
+                </div>
+            </template>
+
+            <div x-show="!isLoading" x-cloak class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50/80">
                         <tr>
-                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Numéro</th>
-                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Client (Source)</th>
-                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-36">Montant / Solde</th>
-                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-36">Échéance</th>
-                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Statut</th>
-                            <th scope="col" class="px-6 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Actions</th>
+                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ __('Number') }}</th>
+                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ __('Client (Source)') }}</th>
+                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-36">{{ __('Amount / Balance') }}</th>
+                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] w-36">{{ __('Due Date') }}</th>
+                            <th scope="col" class="px-6 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ __('Status') }}</th>
+                            <th scope="col" class="px-6 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
                         @forelse ($cheques as $cheque)
-                            <tr class="hover:bg-slate-50 transition-colors">
+                            <tr class="hover:bg-slate-50 transition-colors" data-aos="fade-up" data-aos-delay="{{ 150 + ($loop->index * 50) }}">
                                 <td class="px-6 py-4">
                                     <div class="font-mono text-slate-800 font-black tracking-tighter">{{ $cheque->cheque_number }}</div>
                                     
                                     @if($cheque->payments->count() > 0)
                                         <div class="mt-2 space-y-1">
-                                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Règlements effectués :</p>
+                                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">{{ __('Payments made') }} :</p>
                                             @foreach($cheque->payments as $p)
                                                 <div class="flex items-center gap-2 text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 w-fit">
                                                     <svg class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>
@@ -96,8 +127,8 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="text-sm font-bold text-slate-900">{{ optional($cheque->contact)->name ?? 'Client Inconnu' }}</div>
-                                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $cheque->bank_name ?? 'Banque Non Spécifiée' }}</div>
+                                            <div class="text-sm font-bold text-slate-900">{{ optional($cheque->contact)->name ?? __('Unknown Client') }}</div>
+                                            <div class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $cheque->bank_name ?? __('Bank Not Specified') }}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -105,7 +136,7 @@
                                     <div class="font-black text-slate-900">{{ number_format($cheque->amount, 2, ',', ' ') }} <span class="text-[10px] text-slate-400 font-bold">DH</span></div>
                                     @if($cheque->remaining_amount < $cheque->amount && $cheque->remaining_amount > 0)
                                         <div class="text-[10px] text-emerald-600 font-black mt-1 uppercase tracking-tight italic">
-                                            Solde: {{ number_format($cheque->remaining_amount, 2, ',', ' ') }} DH
+                                            {{ __('Balance') }}: {{ number_format($cheque->remaining_amount, 2, ',', ' ') }} DH
                                         </div>
                                     @endif
                                 </td>
@@ -122,11 +153,11 @@
                                             'endorsed' => 'bg-purple-100 text-purple-800 border-purple-200',
                                         ];
                                         $labelMap = [
-                                            'pending'  => 'En attente',
-                                            'deposited'=> 'Remis',
-                                            'paid'     => 'Payé',
-                                            'unpaid'   => 'Impayé',
-                                            'endorsed' => ($cheque->remaining_amount > 0) ? 'Endossé (Partiel)' : 'Endossé (Total)',
+                                            'pending'  => __('Pending'),
+                                            'deposited'=> __('Deposited'),
+                                            'paid'     => __('Paid'),
+                                            'unpaid'   => __('Unpaid'),
+                                            'endorsed' => ($cheque->remaining_amount > 0) ? __('Endorsed (Partial)') : __('Endorsed (Total)'),
                                         ];
                                         $badgeClass = $colorMap[$cheque->status] ?? 'bg-slate-100 text-slate-800 border-slate-200';
                                     @endphp
@@ -136,26 +167,28 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <div class="inline-flex items-center gap-2">
+                                        @if(auth()->user()->hasPermission('cheques', 'create'))
                                         {{-- Status change dropdown --}}
                                         <form action="{{ route('cheques.status', $cheque->id) }}" method="POST" class="inline">
                                             @csrf @method('PATCH')
                                             <select name="status" onchange="this.form.submit()"
                                                 class="text-[10px] font-black border-slate-200 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 py-2 pl-3 pr-7 cursor-pointer bg-slate-50 uppercase tracking-widest">
-                                                <option value="" disabled selected>Changer...</option>
-                                                <option value="pending"   {{ $cheque->status === 'pending'   ? 'disabled' : '' }}>En attente</option>
-                                                <option value="deposited" {{ $cheque->status === 'deposited' ? 'disabled' : '' }}>Remis</option>
-                                                <option value="paid"      {{ $cheque->status === 'paid'      ? 'disabled' : '' }}>Payé</option>
-                                                <option value="unpaid"    {{ $cheque->status === 'unpaid'    ? 'disabled' : '' }}>Impayé</option>
+                                                <option value="" disabled selected>{{ __('Change...') }}</option>
+                                                <option value="pending"   {{ $cheque->status === 'pending'   ? 'disabled' : '' }}>{{ __('Pending') }}</option>
+                                                <option value="deposited" {{ $cheque->status === 'deposited' ? 'disabled' : '' }}>{{ __('Deposited') }}</option>
+                                                <option value="paid"      {{ $cheque->status === 'paid'      ? 'disabled' : '' }}>{{ __('Paid') }}</option>
+                                                <option value="unpaid"    {{ $cheque->status === 'unpaid'    ? 'disabled' : '' }}>{{ __('Unpaid') }}</option>
                                             </select>
                                         </form>
+                                        @endif
 
                                         {{-- Endorse button — opens modal --}}
-                                        @if($cheque->status !== 'paid' && $cheque->status !== 'deposited' && ($cheque->status !== 'endorsed' || $cheque->remaining_amount > 0))
+                                        @if($cheque->status !== 'paid' && $cheque->status !== 'deposited' && ($cheque->status !== 'endorsed' || $cheque->remaining_amount > 0) && auth()->user()->hasPermission('cheques', 'create'))
                                             <button
                                                 onclick="openEndorseModal({{ $cheque->id }}, '{{ addslashes($cheque->cheque_number) }}', {{ $cheque->remaining_amount }})"
                                                 class="inline-flex items-center gap-1.5 px-3 py-2 text-[10px] font-black uppercase tracking-widest bg-purple-600 text-white rounded-xl shadow-md shadow-purple-200 hover:bg-purple-700 transition-all active:scale-95">
                                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                                                Endosser
+                                                {{ __('Endorse') }}
                                             </button>
                                         @endif
                                     </div>
@@ -163,12 +196,21 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-16 text-center text-slate-400">
-                                    <svg class="mx-auto h-12 w-12 text-slate-200 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                    </svg>
-                                    <p class="text-sm font-bold">Aucun chèque disponible pour l'instant.</p>
-                                    <p class="text-xs mt-1">Commencez par ajouter un nouveau chèque entrant.</p>
+                                <td colspan="6" class="px-6 py-24 text-center">
+                                    <div class="max-w-sm mx-auto flex flex-col items-center">
+                                        <div class="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6 border border-slate-100 shadow-inner">
+                                            <svg class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-base font-black text-slate-800 tracking-tight">{{ __('No cheques registered') }}</h3>
+                                        <p class="text-[10px] uppercase tracking-widest font-bold text-slate-400 mt-2 text-center leading-relaxed">{{ __('Incoming cash flows will appear here. Start by recording a physical reception.') }}</p>
+                                        @if(auth()->user()->hasPermission('cheques', 'create'))
+                                        <a href="{{ route('cheques.create') }}" class="mt-8 bg-slate-900 hover:bg-black text-white px-6 py-3 rounded-xl font-bold transition-all active:scale-95 text-[10px] uppercase tracking-widest shadow-xl shadow-slate-900/10">
+                                            + {{ __('Enter a Deposit') }}
+                                        </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
@@ -205,13 +247,13 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-xl font-black italic">Endossement de Chèque</h3>
-                        <p class="text-purple-200 text-[10px] font-bold uppercase tracking-widest mt-0.5">Transfert direct vers un fournisseur</p>
+                        <h3 class="text-xl font-black italic">{{ __('Cheque Endorsement') }}</h3>
+                        <p class="text-purple-200 text-[10px] font-bold uppercase tracking-widest mt-0.5">{{ __('Direct transfer to a supplier') }}</p>
                     </div>
                 </div>
                 {{-- Cheque summary pill --}}
                 <div class="bg-white/10 rounded-2xl px-5 py-4 mt-2 border border-white/20">
-                    <div class="text-[9px] text-purple-200 font-black uppercase tracking-widest mb-1">Solde Disponible</div>
+                    <div class="text-[9px] text-purple-200 font-black uppercase tracking-widest mb-1">{{ __('Available Balance') }}</div>
                     <div class="font-black text-white font-mono tracking-tighter text-lg" id="modal-cheque-number">—</div>
                     <div class="text-purple-200 font-bold text-sm mt-0.5" id="modal-cheque-amount">—</div>
                 </div>
@@ -262,14 +304,14 @@
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div>
-                            <p class="text-[10px] text-blue-600 font-black uppercase tracking-widest mb-1">Impact sur la facture</p>
+                            <p class="text-[10px] text-blue-600 font-black uppercase tracking-widest mb-1">{{ __('Impact on the invoice') }}</p>
                             <p class="text-xs text-blue-900 font-bold leading-relaxed" id="invoice-impact-text"></p>
                         </div>
                     </div>
 
                     <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100">
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed px-1">
-                            ⚠️ Un chèque endossé est transféré directement au fournisseur, sans passer par la banque. Cette action est <strong class="text-slate-600">irréversible</strong>.
+                            {{ __('An endorsed cheque is transferred directly to the supplier without going through the bank. This action is irreversible.') }}
                         </p>
                     </div>
                 </div>
@@ -278,12 +320,14 @@
                 <div class="px-8 pb-8 flex gap-3">
                     <button type="button" onclick="closeEndorseModal()"
                         class="flex-1 px-4 py-3.5 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all font-sans">
-                        Annuler
+                        {{ __('Cancel') }}
                     </button>
                     <button type="submit"
                         class="flex-1 bg-purple-600 text-white px-4 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all active:scale-95 flex items-center justify-center gap-2 font-sans border-0">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                        Confirmer l'Endossement
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        {{ __('Confirm Endorsement') }}
                     </button>
                 </div>
             </form>

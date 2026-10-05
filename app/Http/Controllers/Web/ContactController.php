@@ -8,14 +8,6 @@ use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:contacts,view')->only(['index']);
-        $this->middleware('permission:contacts,create')->only(['create', 'store']);
-        $this->middleware('permission:contacts,edit')->only(['edit', 'update']);
-        $this->middleware('permission:contacts,delete')->only(['destroy']);
-    }
-
     public function index()
     {
         $contacts = Contact::orderBy('name')->paginate(15);

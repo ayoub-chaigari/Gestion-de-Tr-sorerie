@@ -24,14 +24,16 @@
                     </div>
                     
                     <div class="p-8 grid grid-cols-2 gap-4">
-                        <div class="text-center p-3 bg-slate-50 rounded-2xl border border-slate-100">
-                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Utilisateurs</div>
-                            <div class="text-lg font-black text-slate-900">{{ $company->users_count ?? 0 }}</div>
-                        </div>
-                        <div class="text-center p-3 bg-slate-50 rounded-2xl border border-slate-100 text-blue-600">
-                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Abonnement</div>
-                            <div class="text-lg font-black uppercase">Standard</div>
-                        </div>
+                        <a href="{{ route('companies.users', $company->id) }}" class="text-center p-3 bg-slate-50 rounded-2xl border border-slate-100 group-hover:border-blue-200 group-hover:bg-blue-50/50 transition-all">
+                            <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-blue-500">Utilisateurs</div>
+                            <div class="text-lg font-black text-slate-900 group-hover:text-blue-700">{{ $company->users_count ?? 0 }}</div>
+                        </a>
+                        <a href="{{ route('companies.oversight', $company->id) }}" class="text-center p-3 bg-blue-50 rounded-2xl border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                            <div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1 group-hover:text-blue-100">Oversight</div>
+                            <div class="flex justify-center">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                            </div>
+                        </a>
                     </div>
 
                     <div class="px-8 pb-8 flex gap-3">

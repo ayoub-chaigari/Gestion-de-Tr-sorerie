@@ -4,6 +4,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\BelongsToTenant;
 use App\Models\Traits\Auditable;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\StatusAlertNotification;
 
 class Invoice extends Model {
     use HasFactory, BelongsToTenant, Auditable;
@@ -33,12 +35,25 @@ class Invoice extends Model {
      */
     public function updatePaidAmount() : void
     {
+        $oldStatus = $this->status;
         $this->paid_amount = $this->payments()->sum('amount');
+        
         if ($this->paid_amount >= $this->amount) {
             $this->status = 'paid';
         } elseif ($this->paid_amount > 0) {
-            $this->status = 'partial'; // Added 'partial' although not in enum, I'll update migration if needed.
+            $this->status = 'partial';
         }
+        
         $this->save();
+
+        if ($oldStatus !== $this->status && auth()->user()) {
+            Notification::send(auth()->user(), new StatusAlertNotification([
+                'subject'    => 'Invoice Status Updated',
+                'hero_title' => 'Vault Transaction update',
+                'message'    => "The status of invoice Ref: {$this->reference} has been updated to: " . strtoupper($this->status) . ".",
+                'cta_text'   => 'View Invoices',
+                'cta_url'    => route('invoices.index')
+            ]));
+        }
     }
 }

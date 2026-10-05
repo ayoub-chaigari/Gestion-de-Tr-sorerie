@@ -5,17 +5,11 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\IncomingCheque;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\StatusAlertNotification;
 
 class ChequeController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:cheques,view')->only(['index']);
-        $this->middleware('permission:cheques,create')->only(['create', 'store', 'updateStatus', 'endorse']);
-        $this->middleware('permission:cheques,edit')->only(['edit', 'update']);
-        $this->middleware('permission:cheques,delete')->only(['destroy']);
-    }
-
     public function index(Request $request)
     {
         $query = IncomingCheque::with(['contact', 'bankAccount', 'invoice', 'payments.invoice']);
@@ -71,6 +65,18 @@ class ChequeController extends Controller
         $request->validate(['status' => 'required|in:pending,deposited,paid,unpaid,endorsed']);
         $cheque = IncomingCheque::findOrFail($id);
         $cheque->update(['status' => $request->status]);
+
+        // Trigger Notification
+        if (auth()->user()) {
+            Notification::send(auth()->user(), new StatusAlertNotification([
+                'subject'    => 'Cheque Status Updated',
+                'hero_title' => 'Vault Status Update',
+                'message'    => "The status of cheque N° {$cheque->cheque_number} has been updated to: " . strtoupper($request->status) . ".",
+                'cta_text'   => 'View Dashboard',
+                'cta_url'    => route('cheques.index')
+            ]));
+        }
+
         return redirect()->back()->with('success', 'Statut mis à jour avec succès.');
     }
 

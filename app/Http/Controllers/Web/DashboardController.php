@@ -103,46 +103,95 @@ class DashboardController extends Controller
 
         // Incoming (Entrées)
         $incomings = IncomingCheque::with('contact')->whereIn('status', ['paid', 'deposited', 'endorsed'])
-            ->orderBy('updated_at', 'desc')->take(15)->get();
+            ->orderBy('updated_at', 'desc')->get();
         foreach ($incomings as $inc) {
+            $typeLabel = $inc->type == 'effect' ? __('Effet') : __('Chèque');
             $transactions->push((object)[
                 'type' => 'in',
+                'id' => $inc->id,
                 'date' => $inc->due_date,
+                'time' => $inc->updated_at->format('H:i A'),
                 'timestamp' => $inc->updated_at->timestamp ?? 0,
                 'amount' => $inc->amount,
                 'status' => $inc->status,
-                'description' => "Encaissement " . ($inc->type == 'effect' ? 'Effet' : 'Chèque') . " - " . ($inc->contact->name ?? 'Client')
+                'description' => __('Encaissement :type - :name', ['type' => $typeLabel, 'name' => ($inc->contact->name ?? __('Client'))]),
+                'link' => route('cheques.index', ['search' => $inc->cheque_number])
             ]);
         }
 
         // Outgoing (Dépenses - Invoices)
-        $invoicePayments = \App\Models\InvoicePayment::with('invoice.supplier')->orderBy('created_at', 'desc')->take(15)->get();
+        $invoicePayments = \App\Models\InvoicePayment::with('invoice.supplier')->orderBy('created_at', 'desc')->get();
         foreach ($invoicePayments as $pay) {
             $transactions->push((object)[
                 'type' => 'out',
+                'id' => $pay->id,
                 'date' => $pay->payment_date,
+                'time' => $pay->created_at->format('H:i A'),
                 'timestamp' => $pay->created_at->timestamp ?? 0,
                 'amount' => $pay->amount,
                 'status' => 'paid',
-                'description' => "Paiement Facture - " . ($pay->invoice->supplier->name ?? 'Fournisseur')
+                'description' => __('Paiement Facture - :name', ['name' => ($pay->invoice->supplier->name ?? __('Supplier'))]),
+                'link' => route('invoices.show', $pay->invoice_id)
             ]);
         }
 
         // Outgoing (Dépenses - Direct)
-        $outgoingCheques = OutgoingCheque::where('status', 'paid')->whereNull('invoice_id')->orderBy('updated_at', 'desc')->take(15)->get();
+        $outgoingCheques = OutgoingCheque::where('status', 'paid')->whereNull('invoice_id')->orderBy('updated_at', 'desc')->get();
         foreach ($outgoingCheques as $out) {
             $transactions->push((object)[
                 'type' => 'out',
+                'id' => $out->id,
                 'date' => $out->due_date,
+                'time' => $out->updated_at->format('H:i A'),
                 'timestamp' => $out->updated_at->timestamp ?? 0,
                 'amount' => $out->amount,
                 'status' => 'paid',
-                'description' => "Débit Direct - Chèque " . $out->cheque_number
+                'description' => __('Débit Direct - Chèque :number', ['number' => $out->cheque_number]),
+                'link' => route('outgoing-cheques.index', ['search' => $out->cheque_number])
             ]);
         }
 
-        $recentTransactions = $transactions->sortByDesc('timestamp')->take(10)->values();
+        // All transactions for PDF (sorted, no limit)
+        $allTransactions = $transactions->sortByDesc('timestamp')->values()->map(function($tx) {
+            return (object) [
+                'description' => $tx->description,
+                'date'        => \Carbon\Carbon::parse($tx->date)->format('d/m/Y'),
+                'time'        => \Carbon\Carbon::createFromTimestamp($tx->timestamp)->format('h:i A'),
+                'timestamp'   => $tx->timestamp,
+                'type'        => $tx->type,
+                'amount'      => $tx->amount,
+                'status'      => $tx->status,
+                'link'        => $tx->link,
+            ];
+        });
 
-        return view('dashboard', compact('encaissements', 'enCours', 'decaissements', 'soldeNet', 'overdueInvoices', 'atRiskInvoices', 'unpaidCheques', 'platformStats', 'chartData', 'recentTransactions'));
+        // Recent 10 for live ledger display
+        $recentTransactions = $allTransactions->take(10)->values();
+
+        // Weekly Chart Data: Last 8 weeks
+        $weeklyChartData = [];
+        for ($i = 7; $i >= 0; $i--) {
+            $weekStart = now()->startOfWeek()->subWeeks($i);
+            $weekEnd   = (clone $weekStart)->endOfWeek();
+            $label     = $weekStart->format('d/m');
+
+            $weeklyIncoming = IncomingCheque::whereIn('status', ['paid', 'deposited', 'endorsed'])
+                                ->whereBetween('due_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                                ->sum('amount');
+
+            $weeklyOutgoing = \App\Models\InvoicePayment::whereBetween('payment_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                                ->sum('amount') +
+                              OutgoingCheque::where('status', 'paid')->whereNull('invoice_id')
+                                ->whereBetween('due_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                                ->sum('amount');
+
+            $weeklyChartData[] = [
+                'week'     => $label,
+                'incoming' => $weeklyIncoming,
+                'outgoing' => $weeklyOutgoing,
+            ];
+        }
+
+        return view('dashboard', compact('encaissements', 'enCours', 'decaissements', 'soldeNet', 'overdueInvoices', 'atRiskInvoices', 'unpaidCheques', 'platformStats', 'chartData', 'weeklyChartData', 'recentTransactions', 'allTransactions'));
     }
 }

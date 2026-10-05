@@ -9,14 +9,6 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:invoices,view')->only(['index', 'show']);
-        $this->middleware('permission:invoices,create')->only(['create', 'store', 'recordPayment']);
-        $this->middleware('permission:invoices,edit')->only(['edit', 'update']);
-        $this->middleware('permission:invoices,delete')->only(['destroy']);
-    }
-
     public function index(Request $request)
     {
         $query = Invoice::with('supplier');
@@ -34,10 +26,10 @@ class InvoiceController extends Controller
         if ($request->filled('status')) {
             $status = $request->status;
             if ($status === 'overdue') {
-                $query->where('status', '!=', 'paid')->whereDate('due_date', '<', now()->toDateString());
+                $query->where('status', '!=', 'paid')->whereDate('due_date', '<=', now()->toDateString());
             } elseif ($status === 'at_risk') {
                 $query->where('status', '!=', 'paid')
-                      ->whereDate('due_date', '>=', now()->toDateString())
+                      ->whereDate('due_date', '>', now()->toDateString())
                       ->whereDate('due_date', '<=', now()->addDays(7)->toDateString());
             } else {
                 $query->where('status', $status);

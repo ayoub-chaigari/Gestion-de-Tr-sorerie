@@ -12,12 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class InvoicePaymentController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:invoices,create')->only(['store']);
-        $this->middleware('permission:invoices,delete')->only(['destroy']);
-    }
-
     /**
      * Store a new payment for a specific invoice.
      */

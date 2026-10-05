@@ -12,12 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class OutgoingChequeController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:cheques,view')->only(['index']);
-        $this->middleware('permission:cheques,create')->only(['create', 'store', 'updateStatus']);
-    }
-
     public function index()
     {
         $outgoingCheques = OutgoingCheque::with(['contact', 'chequeBook.bankAccount'])->orderBy('created_at', 'desc')->paginate(15);

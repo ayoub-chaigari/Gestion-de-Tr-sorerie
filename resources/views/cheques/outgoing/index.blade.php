@@ -2,10 +2,12 @@
     <div class="px-4 py-6 sm:px-0">
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-black text-slate-800 italic">Paiements Émis (Sortants)</h1>
+            @if(auth()->user()->hasPermission('cheques', 'create'))
             <a href="{{ route('outgoing-cheques.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl shadow-lg shadow-indigo-100 font-bold transition-all active:scale-95 flex items-center gap-2 uppercase text-xs tracking-widest">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Émettre un chèque
             </a>
+            @endif
         </div>
 
         <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
@@ -43,6 +45,7 @@
                                     <div class="font-black text-slate-900">{{ number_format($cheque->amount, 2) }} <span class="text-[10px] text-slate-400 ml-1 uppercase">MAD</span></div>
                                 </td>
                                 <td class="px-6 py-5 text-center">
+                                    @if(auth()->user()->hasPermission('cheques', 'create'))
                                     <form action="{{ route('outgoing-cheques.status', $cheque->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
@@ -52,6 +55,25 @@
                                             <option value="unpaid" {{ $cheque->status === 'unpaid' ? 'selected' : '' }}>Rejeté</option>
                                         </select>
                                     </form>
+                                    @else
+                                        @php
+                                            $colorMap = [
+                                                'pending'  => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                                                'paid'     => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                                                'unpaid'   => 'bg-red-100 text-red-800 border-red-200',
+                                            ];
+                                            $labelMap = [
+                                                'pending'  => 'En attente',
+                                                'paid'     => 'Payé',
+                                                'unpaid'   => 'Rejeté',
+                                            ];
+                                            $badgeClass = $colorMap[$cheque->status] ?? 'bg-slate-100 text-slate-800 border-slate-200';
+                                        @endphp
+                                        <span class="px-2.5 py-1 inline-flex text-[10px] font-black rounded-lg border uppercase tracking-widest {{ $badgeClass }}">
+                                            {{ $labelMap[$cheque->status] ?? ucfirst($cheque->status) }}
+                                        </span>
+                                    @endif
+
                                     @if($cheque->invoice_id)
                                         <div class="mt-2 text-[9px] text-blue-500 font-bold uppercase tracking-tight">
                                             Lié à: {{ $cheque->invoice->reference ?? 'Fct #'.$cheque->invoice_id }}

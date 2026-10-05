@@ -32,13 +32,20 @@ class UserController extends Controller
             'permissions' => 'nullable|array'
         ]);
 
+        $permissions = $request->permissions ?? [];
+        foreach ($permissions as $module => $actions) {
+            if (!empty($actions) && !in_array('view', $actions)) {
+                $permissions[$module][] = 'view';
+            }
+        }
+
         User::create([
             'company_id' => auth()->user()->company_id,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'ACCOUNTANT',
-            'permissions' => $request->permissions ?? []
+            'permissions' => $permissions
         ]);
 
         return redirect()->route('users.index')->with('success', 'Utilisateur ajouté.');
@@ -67,10 +74,17 @@ class UserController extends Controller
             'permissions' => 'nullable|array'
         ]);
 
+        $permissions = $request->permissions ?? [];
+        foreach ($permissions as $module => $actions) {
+            if (!empty($actions) && !in_array('view', $actions)) {
+                $permissions[$module][] = 'view';
+            }
+        }
+
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'permissions' => $request->permissions ?? []
+            'permissions' => $permissions
         ]);
 
         if ($request->filled('password')) {
@@ -98,5 +112,27 @@ class UserController extends Controller
 
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Utilisateur supprimé de l\'équipe.');
+    }
+
+    public function toggleStatus(User $user)
+    {
+        // SECURITY: Ensure the user belongs to the same company
+        if ($user->company_id !== auth()->user()->company_id && auth()->user()->role !== 'SUPER_ADMIN') {
+            abort(403, 'Accès non autorisé.');
+        }
+
+        // LOGIC: Prevent an admin from suspending themselves
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->withErrors('Vous ne pouvez pas suspendre votre propre compte.');
+        }
+
+        $newStatus = $user->status === 'active' ? 'suspended' : 'active';
+        
+        $user->update([
+            'status' => $newStatus,
+            'suspended_at' => $newStatus === 'suspended' ? now() : null
+        ]);
+
+        return redirect()->back()->with('success', "Le statut de {$user->name} a été mis à jour.");
     }
 }

@@ -1,59 +1,226 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gestion de Trésorerie
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 📌 Overview
+Gestion de Trésorerie is a Laravel-based treasury and cash-flow management application designed to help a company track financial movements, manage contacts, monitor invoices, and handle incoming and outgoing cheques. The project centralizes treasury operations in a single interface, with role-based access for administrative users and a super-admin oversight layer.
 
-## About Laravel
+## ✨ Features
+- Dashboard with cash-flow KPIs, balances, recent transactions, and due-date alerts
+- Contact management for clients and suppliers
+- Invoice creation, tracking, payment allocation, and status updates
+- Incoming cheque and “effet” management with deposit and endorsement workflows
+- Outgoing cheque management and direct payment tracking
+- Remittance generation and bank export workflow
+- Rejection and litigation tracking for failed cheques
+- Bank account and cheque book administration
+- User management and permission-based access control
+- Support center and notification system for internal follow-up
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Technologies
+- PHP 8.2
+- Laravel 12
+- Composer
+- Blade templates
+- Eloquent ORM
+- SQLite (default local configuration)
+- Vite
+- Tailwind CSS
+- Node.js and npm
+- PHPUnit (basic test setup)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🏗️ Project Structure
+```text
+.
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   └── Middleware/
+│   ├── Models/
+│   ├── Notifications/
+│   └── Providers/
+├── bootstrap/
+├── config/
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   ├── seeders/
+│   └── database.sqlite
+├── extracted_stitch/
+├── lang/
+├── public/
+├── resources/
+│   ├── js/
+│   ├── css/
+│   └── views/
+├── routes/
+│   └── web.php
+├── storage/
+├── tests/
+├── .env.example
+├── artisan
+├── composer.json
+├── package.json
+├── phpunit.xml
+├── vite.config.js
+├── .gitignore
+└── README.md
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ⚙️ Requirements
+- PHP 8.2 or later
+- Composer
+- Node.js and npm
+- SQLite as the default local database, or another Laravel-supported database if configured
+- A modern browser for the web interface
 
-## Learning Laravel
+## 🚀 Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd "Gestion de Trésorerie - v8"
+   ```
+2. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
+3. Create the environment file from the example:
+   ```bash
+   copy .env.example .env
+   ```
+   On Linux/macOS, use:
+   ```bash
+   cp .env.example .env
+   ```
+4. Generate the application key:
+   ```bash
+   php artisan key:generate
+   ```
+5. Ensure the SQLite database file exists if you are using the default configuration:
+   ```bash
+   touch database/database.sqlite
+   ```
+   On Windows PowerShell, you can create the file with:
+   ```powershell
+   New-Item database\database.sqlite -ItemType File
+   ```
+6. Run the database migrations and seed the demo data:
+   ```bash
+   php artisan migrate --seed
+   ```
+7. Install the front-end dependencies:
+   ```bash
+   npm install
+   ```
+8. Build the front-end assets:
+   ```bash
+   npm run build
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🔧 Configuration
+The project ships with a default `.env.example` file. Before running the app, copy it to `.env` and review the most important values:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `APP_NAME` and `APP_URL`
+- `APP_ENV` and `APP_DEBUG`
+- `DB_CONNECTION` (default is `sqlite`)
+- `SESSION_DRIVER`, `QUEUE_CONNECTION`, and `CACHE_STORE`
+- `MAIL_*` variables if you want to enable mail notifications
+- `VITE_APP_NAME`
 
-## Laravel Sponsors
+If you use a database other than SQLite, update the matching `DB_*` variables in the `.env` file.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Do not commit real credentials, API keys, or production secrets to the repository.
 
-### Premium Partners
+## ▶️ Running the Project
+To run the application locally, you can use the default Laravel development stack:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+composer run dev
+```
 
-## Contributing
+This script starts the Laravel server, queue worker, logs, and Vite development server together.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Alternatively, run the server and front-end build separately in different terminals:
 
-## Code of Conduct
+```bash
+php artisan serve
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Then open the local application in your browser:
 
-## Security Vulnerabilities
+```text
+http://localhost:8000
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🗄️ Database
+The project is configured for SQLite by default in `.env.example`, and the repository includes a `database/database.sqlite` file for local development. The database layer is managed through Laravel migrations, and the schema covers:
 
-## License
+- companies
+- users
+- contacts
+- bank accounts
+- cheque books
+- incoming cheques
+- outgoing cheques
+- invoices
+- remittances
+- rejections
+- payments
+- activity logs
+- support and notification tables
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The `database/seeders/DatabaseSeeder.php` file creates demo records such as a super-admin user, a sample company, bank account data, and example contacts.
+
+## 📂 Project Structure
+- `app/Models`: Eloquent models for the core business entities such as `User`, `Company`, `Contact`, `Invoice`, `IncomingCheque`, and `OutgoingCheque`.
+- `app/Http/Controllers/Web`: application controllers for the dashboard, invoices, treasury, cheques, exports, support, and administration.
+- `routes/web.php`: route definitions, permission checks, and role-based access limits.
+- `resources/views`: Blade templates for the user interface and forms.
+- `database/migrations`: SQL schema definitions for the application database.
+- `database/seeders`: demo data for local development and testing.
+- `public/`: public static assets and generated application entry points.
+- `config/`: Laravel configuration for security, services, queues, sessions, and more.
+- `tests/`: PHPUnit test setup and example tests.
+
+## 🔐 Security
+The application includes the following implemented security features:
+
+- Laravel authentication and session handling
+- Role-based access control using user roles and permission checks
+- Email verification support for user accounts
+- Password reset flow
+- Admin-only routes for sensitive treasury and user-management actions
+
+This project does not include a production-grade security review or a custom security layer beyond the standard Laravel features present in the codebase.
+
+## 🧪 Testing
+The project includes a basic Laravel PHPUnit setup and a sample test under `tests/Feature/ExampleTest.php`.
+
+Run the test suite with:
+
+```bash
+php artisan test
+```
+
+The current test setup is minimal and should be expanded for more complete application coverage before production use.
+
+## 🚧 Known Limitations
+- The default configuration is intended for local development and uses SQLite.
+- The project contains a basic test setup but not a comprehensive automated test coverage suite.
+- The repository does not include screenshots or demo media for the application.
+- There is no dedicated API documentation in the repository for external integrations.
+- The application appears to be a business-specific treasury tool rather than a generic SaaS starter template.
+
+## 🔮 Future Improvements
+The following are realistic future ideas for the project, not existing features:
+
+- Add more detailed financial reporting and export options
+- Expand automated tests for invoice, cheque, and remittance workflows
+- Improve notification rules and reminder automation for due dates
+- Add more granular audit and approval flows for treasury actions
+- Introduce a public API layer for external system integrations
+
+## 👨‍💻 Author
+Ayoub Chaigari
+
+## 📄 License
+No license has been specified.

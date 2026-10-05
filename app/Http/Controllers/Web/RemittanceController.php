@@ -11,12 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class RemittanceController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('permission:remittances,view')->only(['index', 'show', 'bankExport']);
-        $this->middleware('permission:remittances,create')->only(['create', 'generate']);
-    }
-
     public function index()
     {
         $remittances = Remittance::with('bankAccount')->orderBy('remittance_date', 'desc')->paginate(15);

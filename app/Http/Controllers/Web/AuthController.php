@@ -8,6 +8,7 @@ use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 
 class AuthController extends Controller
 {
@@ -24,8 +25,16 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($user->status === 'suspended') {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Votre compte a été suspendu par l\'administrateur.'
+                ]);
+            }
+
             $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+            return redirect()->intended(route($user->getHomeRoute()));
         }
 
         return back()->withErrors([
@@ -49,6 +58,7 @@ class AuthController extends Controller
             'company_rc'   => 'nullable|string|max:100',
             'company_if'   => 'nullable|string|max:9',
             'company_city' => 'nullable|string|max:100',
+            'company_phone' => 'nullable|string|max:20',
         ]);
 
         $company = Company::create([
@@ -69,9 +79,11 @@ class AuthController extends Controller
             'role'       => 'ADMIN',
         ]);
 
+        event(new Registered($user));
+
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        return redirect()->route($user->getHomeRoute());
     }
 
     public function logout(Request $request)

@@ -43,14 +43,29 @@ trait Auditable
 
         $user = Auth::user();
 
+        // Security: Exclude hidden fields (like password) from logs
+        if ($this->hidden) {
+            if ($oldValues) {
+                $oldValues = array_diff_key($oldValues, array_flip($this->hidden));
+            }
+            if ($newValues) {
+                $newValues = array_diff_key($newValues, array_flip($this->hidden));
+            }
+        }
+
+        // Don't log if there are no values left after filtering
+        if ($action === 'updated' && empty($newValues)) {
+            return;
+        }
+
         ActivityLog::create([
-            'company_id' => $this->company_id ?? $user->company_id, // Fallback if model doesn't have company_id
+            'company_id' => $this->company_id ?? $user->company_id,
             'user_id'    => $user->id,
             'action'     => $action,
             'model_type' => get_class($this),
             'model_id'   => $this->id,
-            'old_values' => $oldValues,
-            'new_values' => $newValues,
+            'old_values' => !empty($oldValues) ? $oldValues : null,
+            'new_values' => !empty($newValues) ? $newValues : null,
             'ip_address' => request()->ip(),
         ]);
     }

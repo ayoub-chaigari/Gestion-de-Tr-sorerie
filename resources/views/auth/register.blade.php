@@ -1,109 +1,128 @@
 <x-guest-layout>
-    <div class="mb-8 text-center">
-        <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/30 mx-auto mb-6 transform hover:scale-110 transition-transform">
-            <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-        </div>
-        <h2 class="text-3xl font-black text-slate-900 italic tracking-tight">Inscription</h2>
-        <p class="text-[11px] font-bold text-slate-400 mt-2 uppercase tracking-widest">Créez votre espace Trésorerie SaaS</p>
+    <div class="mb-8 opacity-0 animate-fade-in-up" style="animation-delay: 100ms; animation-fill-mode: forwards;">
+        <h1 class="text-[2.2rem] font-black text-slate-900 tracking-tight font-headline mb-3 leading-tight">{{ __('Create Account') }}</h1>
+        <p class="text-[14px] font-medium text-slate-500">
+            {{ __('Join the elite circle of institutional treasury management.') }}
+        </p>
     </div>
 
     @if($errors->any())
-        <div class="mb-6 bg-red-50 border border-red-200 rounded-2xl p-4">
+        <div class="mb-6 bg-red-50 border border-red-100 rounded-xl p-4 animate-fade-in-up">
             @foreach($errors->all() as $error)
-                <p class="text-xs text-red-600 font-bold">• {{ $error }}</p>
+                <p class="text-[11px] text-red-600 font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[14px]">error</span>
+                    {{ $error }}
+                </p>
             @endforeach
         </div>
     @endif
 
-    <form class="space-y-6" action="{{ route('register') }}" method="POST">
+    <form class="space-y-8 opacity-0 animate-fade-in-up" style="animation-delay: 200ms; animation-fill-mode: forwards;" action="{{ route('register') }}" method="POST">
         @csrf
 
-        {{-- ─── SECTION : Informations Personnelles ─────────────────── --}}
-        <div>
-            <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-4 border-b border-slate-100 pb-2">01 · Votre Compte</p>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Nom Complet</label>
-                    <input name="name" type="text" value="{{ old('name') }}" required
-                        class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                        placeholder="Votre nom et prénom">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Email Professionnel</label>
-                    <input name="email" type="email" value="{{ old('email') }}" required
-                        class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                        placeholder="email@societe.ma">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Mot de Passe</label>
-                        <input name="password" type="password" required
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm" placeholder="••••••••">
+        {{-- Section 1: Identity --}}
+        <div class="space-y-4">
+            <h3 class="text-[10px] font-black text-[#006C4A] uppercase tracking-[0.2em] border-b border-slate-100 pb-3 mb-6">01 · {{ __('Personal Identity') }}</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Full Name') }}</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#006C4A] transition-colors">
+                            <span class="material-symbols-outlined text-[1.2rem]">person</span>
+                        </div>
+                        <input name="name" type="text" value="{{ old('name') }}" required class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="John Doe">
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Confirmation</label>
-                        <input name="password_confirmation" type="password" required
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm" placeholder="••••••••">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Work Email') }}</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#006C4A] transition-colors">
+                            <span class="material-symbols-outlined text-[1.2rem]">mail</span>
+                        </div>
+                        <input name="email" type="email" value="{{ old('email') }}" required class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="doe@company.ma">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Password') }}</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#006C4A] transition-colors">
+                            <span class="material-symbols-outlined text-[1.2rem]">lock</span>
+                        </div>
+                        <input name="password" type="password" required class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Confirm') }}</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#006C4A] transition-colors">
+                            <span class="material-symbols-outlined text-[1.2rem]">lock_reset</span>
+                        </div>
+                        <input name="password_confirmation" type="password" required class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="••••••••">
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- ─── SECTION : Informations Société ──────────────────────── --}}
-        <div>
-            <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-4 border-b border-slate-100 pb-2">02 · Votre Société</p>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Raison Sociale <span class="text-red-500">*</span></label>
-                    <input name="company_name" type="text" value="{{ old('company_name') }}" required
-                        class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                        placeholder="ACME MAROC SARL">
+        {{-- Section 2: Company --}}
+        <div class="space-y-4">
+            <h3 class="text-[10px] font-black text-[#006C4A] uppercase tracking-[0.2em] border-b border-slate-100 pb-3 mb-6">02 · {{ __('Company Details') }}</h3>
+            
+            <div class="space-y-2 text-left">
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Entity Legal Name') }}</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#006C4A] transition-colors">
+                        <span class="material-symbols-outlined text-[1.2rem]">domain</span>
+                    </div>
+                    <input name="company_name" type="text" value="{{ old('company_name') }}" required class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="ACME MAROC SARL">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">ICE (15 chiffres)</label>
-                        <input name="company_ice" type="text" value="{{ old('company_ice') }}" maxlength="15" pattern="\d{15}"
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                            placeholder="000000000000000">
-                        <p class="text-[9px] text-slate-400 mt-1 px-1">Laissez vide → valeur temporaire automatique</p>
-                    </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Registre Commerce (RC)</label>
-                        <input name="company_rc" type="text" value="{{ old('company_rc') }}"
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                            placeholder="EX. 12345">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Identifiant Fiscal (IF)</label>
-                        <input name="company_if" type="text" value="{{ old('company_if') }}" maxlength="9"
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                            placeholder="Identifiant Fiscal">
-                    </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('ICE (15 digits)') }}</label>
+                    <input name="company_ice" type="text" value="{{ old('company_ice') }}" maxlength="15" pattern="\d{15}" class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 px-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="000... (Optional)">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Ville</label>
-                        <input name="company_city" type="text" value="{{ old('company_city') }}"
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                            placeholder="Casablanca">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Registre Commerce (RC)') }}</label>
+                    <input name="company_rc" type="text" value="{{ old('company_rc') }}" class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 px-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="RC Number">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Identifiant Fiscal (IF)') }}</label>
+                    <input name="company_if" type="text" value="{{ old('company_if') }}" maxlength="9" class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 px-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="IF Number">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('City') }}</label>
+                    <input name="company_city" type="text" value="{{ old('company_city') }}" class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 px-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="Casablanca">
+                </div>
+            </div>
+
+            <div class="space-y-2 text-left">
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest ml-1">{{ __('Work Phone Number') }}</label>
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#006C4A] transition-colors">
+                        <span class="material-symbols-outlined text-[1.2rem]">call</span>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Téléphone Société</label>
-                        <input name="company_phone" type="text" value="{{ old('company_phone') }}"
-                            class="w-full bg-slate-50 border-slate-200 placeholder-slate-300 rounded-2xl p-4 text-sm font-black focus:ring-blue-500 focus:border-blue-500 transition-all border shadow-sm"
-                            placeholder="+212 6XX XXX XXX">
-                    </div>
+                    <input name="company_phone" type="text" value="{{ old('company_phone') }}" class="w-full bg-slate-50 border border-slate-200 placeholder-slate-300 rounded-xl py-3 pl-12 pr-4 text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-[#006C4A]/5 focus:border-[#006C4A] focus:bg-white transition-all duration-300" placeholder="+212 6XX XXX XXX">
                 </div>
             </div>
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-slate-900 text-white p-5 rounded-3xl font-black shadow-xl shadow-blue-100 transition-all active:scale-[0.98] uppercase text-xs tracking-[0.2em]">
-            Créer mon Espace Trésorerie →
+        <button type="submit" class="w-full bg-[#111827] hover:bg-[#006C4A] text-white py-4 rounded-xl font-bold transition-all duration-300 transform active:scale-[0.98] hover:shadow-xl hover:shadow-[#006C4A]/20 mt-4 text-[14px] flex items-center justify-center gap-2">
+            <span>{{ __('Initialize My Ecosystem') }}</span>
+            <span class="material-symbols-outlined text-[1.1rem]">rocket_launch</span>
         </button>
 
-        <p class="text-center text-[10px] font-bold text-slate-400">
-            Déjà inscrit ? <a href="{{ route('login') }}" class="text-blue-600 font-black underline decoration-blue-200">Se connecter</a>
-        </p>
+        <div class="text-center mt-10 pb-10">
+            <p class="text-[13px] text-slate-500 font-medium">
+                {{ __('Already registered?') }} <a href="{{ route('login') }}" class="text-[#006C4A] font-bold hover:underline ml-1">{{ __('Login here') }}</a>
+            </p>
+        </div>
     </form>
 </x-guest-layout>
